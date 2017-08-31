@@ -1,5 +1,25 @@
 #! /bin/sh
 
+# Problèmes :
+# * Index.html est généré dans le dossier courant au lieu d'être généré dans le dossier de destination.
+# * Certaines miniatures ne sont pas générées.
+# * Avec le mode verbeux, la première et dernière image ne sont pas prises en compte par la boucle qui gère les miniatures.
+# * La génération de miniatures ne fonctionne pas si l'image a des espaces dans son nom.
+# * Si le dossier source a des espaces dans son nom, aucune miniature n'est générée.
+# * Si on enlève 2> /dev/null on a plein d'erreurs.
+# * Attention aux guillemets avec les sous-shells
+# * Autre solution :
+# > (
+# > if bidule; then
+# >   echo gmic ...
+# > fi
+# > ) xargs ...
+# En gros on écrit la commande et on la pipe à xargs.
+# * Il n'y a pas d'erreur en cas d'option inconnue.
+# * Un "shift" est oublié lors du parsing des arguments
+# * On peut nommer le dossier de destination "--help", ce qui embête cd
+# * On parse deux fois des arguments (dans galerie-shell.sh et dans galerie_main(). Il aurait été plus simple de passer des variables pré-traitées à galerie_main().
+
 # Récupération du chemin absolu vers le répertoire contenant le
 # script. $0 est le chemin (possiblement relatif) vers le script
 # courant, "$(dirname "$0")" est le répertoire le contenant, et la
@@ -31,7 +51,7 @@ while [ $# -gt 0 ]; do
         "--source")
             # On regarde si la source existe
             # On réprime les erreurs de cd car si le dossier n'existe
-            # pas ce cas sera traité dans le else
+            # car ce cas sera traité dans le else
             if [ -d "$(cd "$2" 2>/dev/null && pwd)" ]; then
                 source="$(cd "$2" && pwd)"
                 # On compte le nombre d'images dans le dossier source
